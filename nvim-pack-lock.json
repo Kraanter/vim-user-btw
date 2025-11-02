@@ -9,10 +9,15 @@
     "harpoon": {
       "version": "'harpoon2'"
     },
+    "mini.extra": {
+      "rev": "188422c",
+      "src": "https://github.com/echasnovski/mini.extra"
+    },
     "mini.pick": [],
     "neovim": [],
     "nvim-lspconfig": [],
     "oil.nvim": [],
-    "plenary.nvim": []
+    "plenary.nvim": [],
+    "transparent.nvim": []
   }
 }

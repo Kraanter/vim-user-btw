@@ -1,148 +1,250 @@
-vim.o.number = true
-vim.o.relativenumber = true
-vim.o.signcolumn = "yes"
-vim.o.wrap = true
-vim.o.tabstop = 4
-vim.o.swapfile = false
-vim.g.mapleader = " "
-vim.g.maplocalleader = " "
-vim.o.winborder = "none"
-vim.o.breakindent = true
-vim.o.cursorline = true
-vim.o.scrolloff = 10
-vim.o.colorcolumn = "80"
+-- ============================================================================
+-- Core options
+-- ============================================================================
+local opt, g, api = vim.opt, vim.g, vim.api
 
--- Save undo history
-vim.o.undofile = true
+-- Leader keys must be set before mappings
+g.mapleader = " "
+g.maplocalleader = " "
 
--- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
-vim.o.ignorecase = true
-vim.o.smartcase = true
-vim.o.inccommand = 'split'
-vim.o.list = true
+-- Options (single source of truth)
+local options = {
+    number = true,
+    relativenumber = true,
+    signcolumn = "yes",
+    wrap = true,
+    breakindent = true,
+    cursorline = true,
+    colorcolumn = "80",
+    scrolloff = 10,
 
-vim.schedule(function()
-	vim.opt.clipboard = 'unnamedplus'
-end)
+    tabstop = 4,
+    shiftwidth = 4,
+    softtabstop = 4,
+    expandtab = true,
 
-vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
+    swapfile = false,
+    undofile = true,
 
-vim.keymap.set('n', '<leader>o', '<cmd>update<CR><cmd>source<CR>')
-vim.keymap.set('n', '<esc>', '<cmd>nohlsearch<CR>')
+    ignorecase = true,
+    smartcase = true,
+    inccommand = "split",
 
-vim.api.nvim_create_autocmd('TextYankPost', {
-	desc = 'Highlight when yanking (copying) text',
-	group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-	callback = function()
-		vim.highlight.on_yank()
-	end,
-})
+    list = true,
+    -- whitespace guides
+    listchars = { tab = "» ", trail = "·", nbsp = "␣" },
 
-vim.pack.add({
-	{ src = "https://github.com/rose-pine/neovim" },
-	{ src = "https://github.com/xiyaowong/transparent.nvim" },
-	{ src = "https://github.com/stevearc/oil.nvim" },
-	{ src = "https://github.com/echasnovski/mini.pick" },
-	{ src = "https://github.com/neovim/nvim-lspconfig" },
-	{ src = "https://github.com/L3MON4D3/LuaSnip" },
-	{ src = "https://github.com/Saghen/blink.cmp",            version = "v1.7.0" },
-	{ src = "https://github.com/rafamadriz/friendly-snippets" },
-	{ src = "https://github.com/rmagatti/auto-session" },
-	{ src = "https://github.com/nvim-lua/plenary.nvim" },
-	{ src = "https://github.com/theprimeagen/harpoon",        version = "harpoon2" },
-})
+    -- modern QoL
+    mouse = "a",
+    termguicolors = true,
+    splitright = true,
+    splitbelow = true,
+    confirm = true,
+    updatetime = 200,
+    timeoutlen = 400,
 
--- LSP setup
-vim.lsp.enable({ "lua_ls", "ts_ls", "gopls", "intelephense" })
+    -- popup transparency (keep; works with many UIs)
+    winblend = 0,
+    pumblend = 0,
+}
 
--- Telescope replacement
-require("mini.pick").setup()
-vim.ui.select = function(items, opts, on_choice)
-	require "mini.pick".ui_select(items, opts, on_choice)
+for k, v in pairs(options) do
+    opt[k] = v
 end
-vim.keymap.set('n', '<leader>f', "<cmd>Pick files<CR>")
-vim.keymap.set('n', '<leader>g', "<cmd>Pick grep_live<CR>")
-vim.keymap.set('n', '<leader>h', "<cmd>Pick help<CR>")
 
--- Setup LSP keymaps only when a language server attaches
-vim.api.nvim_create_autocmd('LspAttach', {
-	desc = 'LSP actions',
-	callback = function(ev)
-		local buf = ev.buf
-		local opts = { buffer = buf, silent = true, noremap = true }
+-- Clipboard (no need to schedule)
+opt.clipboard = "unnamedplus"
 
-		-- Helper function for easier keymap definition
-		local map = function(mode, lhs, rhs, desc)
-			vim.keymap.set(mode, lhs, rhs, opts)
-		end
+-- Persist more session state
+opt.sessionoptions = {
+    "blank", "buffers", "curdir", "folds", "help", "tabpages", "winsize",
+    "winpos", "terminal", "localoptions",
+}
 
-		map("n", "K", vim.lsp.buf.hover, "LSP hover symbol info")
-
-		-- === NAVIGATION ===
-		map('n', 'gd', vim.lsp.buf.definition, 'Go to definition')
-		map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration')
-		map('n', 'gt', vim.lsp.buf.type_definition, 'Go to type definition')
-		map('n', 'gi', vim.lsp.buf.implementation, 'Go to implementation')
-		map('n', 'gr', vim.lsp.buf.references, 'List references')
-
-		-- === CODE ACTIONS ===
-		map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, 'Code action')
-		map('n', '<leader>rn', vim.lsp.buf.rename, 'Rename symbol')
-		map('n', '<leader>lf', function()
-			local ft = vim.bo.filetype
-
-			-- Run :Prettier for JavaScript or TypeScript files
-			if ft == 'javascript' or ft == 'typescript' or ft == 'javascriptreact' or ft == 'typescriptreact' then
-				vim.cmd('Prettier')
-			else
-				vim.lsp.buf.format { async = true }
-			end
-		end, 'Format buffer')
-
-		-- === DIAGNOSTICS ===
-		map('n', 'gl', vim.diagnostic.open_float, 'Show diagnostics')
-		map('n', '[d', vim.diagnostic.goto_prev, 'Prev diagnostic')
-		map('n', ']d', vim.diagnostic.goto_next, 'Next diagnostic')
-		map('n', '<leader>q', vim.diagnostic.setloclist, 'Diagnostics list')
-
-		-- === SYMBOLS ===
-		map('n', '<leader>ds', vim.lsp.buf.document_symbol, 'Document symbols')
-		map('n', '<leader>ws', vim.lsp.buf.workspace_symbol, 'Workspace symbols')
-
-		-- === MISC ===
-		map('n', '<leader>lh', vim.lsp.buf.signature_help, 'Signature help')
-
-		-- === COMPLETION (optional) ===
-		vim.opt_local.omnifunc = 'v:lua.vim.lsp.omnifunc'
-	end,
+-- ============================================================================
+-- UI polish: borders, diagnostics
+-- ============================================================================
+vim.diagnostic.config({
+    float = { border = "rounded" },
+    severity_sort = true,
+    virtual_text = {
+        spacing = 2,
+        prefix = "●",
+    },
+    underline = true,
+    update_in_insert = false,
 })
 
--- Autocomplete
-require("blink.cmp").setup({
-	snippets = { preset = "luasnip" },
-})
-require "luasnip.loaders.from_vscode".lazy_load()
+-- Ensure all floating windows (LSP, help, etc.) use rounded borders
+-- (works for hover, signature, etc.)
+local orig = vim.lsp.util.open_floating_preview
+vim.lsp.util.open_floating_preview = function(contents, syntax, opts, ...)
+    opts = opts or {}
+    opts.border = opts.border or "rounded"
+    return orig(contents, syntax, opts, ...)
+end
 
--- Filesystem editing
-require "oil".setup()
-vim.keymap.set('n', '<leader>e', "<cmd>Oil<CR>")
+-- ============================================================================
+-- Keymaps
+-- ============================================================================
+local map = function(mode, lhs, rhs, desc, extra)
+    local opts = { noremap = true, silent = true, desc = desc }
+    if extra then opts = vim.tbl_extend("force", opts, extra) end
+    vim.keymap.set(mode, lhs, rhs, opts)
+end
 
--- Session management per 'project'
-require "auto-session".setup({})
+map("n", "<leader>o", "<cmd>update|source %<CR>", "Save & Source current file")
+map("n", "<Esc>", "<cmd>nohlsearch<CR>", "Clear search highlight")
+
+-- mini.pick (Telescope replacement)
+map("n", "<leader>f", "<cmd>Pick files<CR>", "Find files")
+map("n", "<leader>b", "<cmd>Pick buffers<CR>", "Find buffers")
+map("n", "<leader>g", "<cmd>Pick grep_live<CR>", "Live grep")
+map("n", "<leader>h", "<cmd>Pick help<CR>", "Help tags")
+map('n', '<leader>sd', "<cmd>Pick lsp scope='document_symbol'<CR>", 'LSP document symbols')
+map('n', '<leader>ss', "<cmd>Pick lsp scope='workspace_symbol'<CR>", 'LSP workspace symbols')
+
+-- Oil
+map("n", "<leader>e", "<cmd>Oil<CR>", "File explorer (Oil)")
+
+-- Transparency
+map("n", "<leader>t", "<cmd>TransparentToggle<CR>", "Toggle transparency")
 
 -- Harpoon
-local harpoon = require("harpoon")
-harpoon:setup()
-vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
-vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
-vim.keymap.set("n", "<C-j>", function() harpoon:list():select(1) end)
-vim.keymap.set("n", "<C-k>", function() harpoon:list():select(2) end)
-vim.keymap.set("n", "<C-l>", function() harpoon:list():select(3) end)
-vim.keymap.set("n", "<C-;>", function() harpoon:list():select(4) end)
+map("n", "<leader>a", function() require("harpoon"):list():add() end, "Harpoon add file")
+map("n", "<C-e>", function()
+    local h = require("harpoon")
+    h.ui:toggle_quick_menu(h:list())
+end, "Harpoon menu")
+map("n", "<C-j>", function() require("harpoon"):list():select(1) end, "Harpoon 1")
+map("n", "<C-k>", function() require("harpoon"):list():select(2) end, "Harpoon 2")
+map("n", "<C-l>", function() require("harpoon"):list():select(3) end, "Harpoon 3")
+map("n", "<C-;>", function() require("harpoon"):list():select(4) end, "Harpoon 4")
+map("n", "<C-S-P>", function() require("harpoon"):list():prev() end, "Harpoon prev")
+map("n", "<C-S-N>", function() require("harpoon"):list():next() end, "Harpoon next")
 
--- Toggle previous & next buffers stored within Harpoon list
-vim.keymap.set("n", "<C-S-P>", function() harpoon:list():prev() end)
-vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end)
+-- ============================================================================
+-- Autocmds
+-- ============================================================================
+api.nvim_create_autocmd("TextYankPost", {
+    desc = "Highlight when yanking (copying) text",
+    group = api.nvim_create_augroup("kickstart-highlight-yank", { clear = true }),
+    callback = function() vim.highlight.on_yank({ higroup = "Visual", timeout = 120 }) end,
+})
 
-vim.cmd("colorscheme rose-pine-moon")
-vim.cmd(":hi StatusLine guibg=NONE")
+-- ============================================================================
+-- Plugins (Neovim pack.lua)
+-- ============================================================================
+vim.pack.add({
+    { src = "https://github.com/rose-pine/neovim" },
+    { src = "https://github.com/xiyaowong/transparent.nvim" },
+    { src = "https://github.com/stevearc/oil.nvim" },
+    { src = "https://github.com/echasnovski/mini.pick" },
+    { src = "https://github.com/echasnovski/mini.extra" },
+    { src = "https://github.com/neovim/nvim-lspconfig" },
+    { src = "https://github.com/L3MON4D3/LuaSnip" },
+    { src = "https://github.com/Saghen/blink.cmp",            version = "v1.7.0" },
+    { src = "https://github.com/rafamadriz/friendly-snippets" },
+    { src = "https://github.com/rmagatti/auto-session" },
+    { src = "https://github.com/nvim-lua/plenary.nvim" },
+    { src = "https://github.com/theprimeagen/harpoon",        version = "harpoon2" },
+})
+
+-- ============================================================================
+-- LSP
+-- ============================================================================
+-- Prefer the new helper when available; otherwise basic lspconfig fallback
+if vim.lsp and vim.lsp.enable then
+    vim.lsp.enable({ "lua_ls", "ts_ls", "gopls", "intelephense", "rust_analyzer" })
+else
+    local lsp = require("lspconfig")
+    local servers = { lua_ls = {}, tsserver = {}, gopls = {}, intelephense = {} }
+    for name, cfg in pairs(servers) do
+        if lsp[name] then lsp[name].setup(cfg) end
+    end
+end
+
+-- Buffer-local LSP mappings on attach
+api.nvim_create_autocmd("LspAttach", {
+    desc = "LSP actions",
+    callback = function(ev)
+        local buf = ev.buf
+        local bmap = function(mode, lhs, rhs, desc)
+            map(mode, lhs, rhs, desc, { buffer = buf })
+        end
+
+        bmap("n", "K", vim.lsp.buf.hover, "Hover")
+        -- Navigation
+        bmap("n", "gd", vim.lsp.buf.definition, "Go to definition")
+        bmap("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
+        bmap("n", "gt", vim.lsp.buf.type_definition, "Go to type definition")
+        bmap("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
+        bmap("n", "gr", vim.lsp.buf.references, "List references")
+        -- Code
+        bmap({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, "Code action")
+        bmap("n", "<leader>rn", vim.lsp.buf.rename, "Rename")
+        bmap("n", "<leader>lf", function()
+            local ft = vim.bo[buf].filetype
+            if ft == "javascript" or ft == "typescript" or ft == "javascriptreact" or ft == "typescriptreact" then
+                vim.cmd("silent! Prettier")
+            else
+                vim.lsp.buf.format({ async = true })
+            end
+        end, "Format buffer")
+        -- Diagnostics
+        bmap("n", "gl", vim.diagnostic.open_float, "Line diagnostics")
+        bmap("n", "[d", vim.diagnostic.goto_prev, "Prev diagnostic")
+        bmap("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
+        bmap("n", "<leader>q", vim.diagnostic.setloclist, "Populate loclist")
+        -- Symbols
+        bmap("n", "<leader>ds", vim.lsp.buf.document_symbol, "Document symbols")
+        bmap("n", "<leader>ws", vim.lsp.buf.workspace_symbol, "Workspace symbols")
+        -- Sig help
+        bmap("n", "<leader>lh", vim.lsp.buf.signature_help, "Signature help")
+
+        -- Enable omnifunc for completion
+        vim.bo[buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+    end,
+})
+
+-- ============================================================================
+-- Completion & snippets
+-- ============================================================================
+require("blink.cmp").setup({
+    snippets = { preset = "luasnip" },
+})
+require("luasnip.loaders.from_vscode").lazy_load()
+
+-- ============================================================================
+-- Tools
+-- ============================================================================
+require("mini.pick").setup({
+    source = {
+        grep_live = {
+            command = { 'rg', '--vimgrep', '--no-heading', '--smart-case' },
+        },
+    },
+})
+require("mini.extra").setup()
+require("oil").setup({})
+require("auto-session").setup({})
+
+-- ============================================================================
+-- Theme
+-- ============================================================================
+vim.cmd.colorscheme("rose-pine-moon")
+require("transparent").setup({
+  -- keep your existing config; add these to exclusions
+  exclude_groups = {
+    "NormalFloat", "FloatBorder", "Pmenu", "PmenuSel",
+    -- mini.pick groups (catch-all; harmless if some don’t exist)
+    "MiniPickNormal", "MiniPickBorder", "MiniPickPrompt",
+    "MiniPickMatchCurrent", "MiniPickMatch", "MiniPickHeader",
+  },
+})
+
+-- Get palette for current Rose Pine variant
+local palette = require("rose-pine.palette")
+
+-- Current selection in the picker
+api.nvim_set_hl(0, "MiniPickMatchCurrent", { bg = palette.overlay, fg = palette.text, bold = true })
