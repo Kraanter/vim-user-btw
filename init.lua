@@ -40,6 +40,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 vim.pack.add({
   { src = "https://github.com/rose-pine/neovim" },
+  { src = "https://github.com/xiyaowong/transparent.nvim" },
   { src = "https://github.com/stevearc/oil.nvim" },
   { src = "https://github.com/echasnovski/mini.pick" },
   { src = "https://github.com/neovim/nvim-lspconfig" },
@@ -134,4 +135,3 @@ vim.keymap.set("n", "<C-S-N>", function() harpoon:list():next() end)
 
 vim.cmd("colorscheme rose-pine-moon")
 vim.cmd(":hi StatusLine guibg=NONE")
-
