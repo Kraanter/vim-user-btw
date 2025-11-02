@@ -1,0 +1,18 @@
+{
+  "plugins": {
+    "LuaSnip": [],
+    "auto-session": [],
+    "blink.cmp": {
+      "version": "'v1.7.0'"
+    },
+    "friendly-snippets": [],
+    "harpoon": {
+      "version": "'harpoon2'"
+    },
+    "mini.pick": [],
+    "neovim": [],
+    "nvim-lspconfig": [],
+    "oil.nvim": [],
+    "plenary.nvim": []
+  }
+}
