@@ -22,7 +22,7 @@ vim.o.inccommand = 'split'
 vim.o.list = true
 
 vim.schedule(function()
-  vim.opt.clipboard = 'unnamedplus'
+	vim.opt.clipboard = 'unnamedplus'
 end)
 
 vim.o.sessionoptions = "blank,buffers,curdir,folds,help,tabpages,winsize,winpos,terminal,localoptions"
@@ -31,25 +31,25 @@ vim.keymap.set('n', '<leader>o', '<cmd>update<CR><cmd>source<CR>')
 vim.keymap.set('n', '<esc>', '<cmd>nohlsearch<CR>')
 
 vim.api.nvim_create_autocmd('TextYankPost', {
-  desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
-  callback = function()
-    vim.highlight.on_yank()
-  end,
+	desc = 'Highlight when yanking (copying) text',
+	group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+	callback = function()
+		vim.highlight.on_yank()
+	end,
 })
 
 vim.pack.add({
-  { src = "https://github.com/rose-pine/neovim" },
-  { src = "https://github.com/xiyaowong/transparent.nvim" },
-  { src = "https://github.com/stevearc/oil.nvim" },
-  { src = "https://github.com/echasnovski/mini.pick" },
-  { src = "https://github.com/neovim/nvim-lspconfig" },
-  { src = "https://github.com/L3MON4D3/LuaSnip" },
-  { src = "https://github.com/Saghen/blink.cmp", version = "v1.7.0" },
-  { src = "https://github.com/rafamadriz/friendly-snippets" },
-  { src = "https://github.com/rmagatti/auto-session" },
-  { src = "https://github.com/nvim-lua/plenary.nvim" },
-  { src = "https://github.com/theprimeagen/harpoon", version = "harpoon2" },
+	{ src = "https://github.com/rose-pine/neovim" },
+	{ src = "https://github.com/xiyaowong/transparent.nvim" },
+	{ src = "https://github.com/stevearc/oil.nvim" },
+	{ src = "https://github.com/echasnovski/mini.pick" },
+	{ src = "https://github.com/neovim/nvim-lspconfig" },
+	{ src = "https://github.com/L3MON4D3/LuaSnip" },
+	{ src = "https://github.com/Saghen/blink.cmp",            version = "v1.7.0" },
+	{ src = "https://github.com/rafamadriz/friendly-snippets" },
+	{ src = "https://github.com/rmagatti/auto-session" },
+	{ src = "https://github.com/nvim-lua/plenary.nvim" },
+	{ src = "https://github.com/theprimeagen/harpoon",        version = "harpoon2" },
 })
 
 -- LSP setup
@@ -58,7 +58,7 @@ vim.lsp.enable({ "lua_ls", "ts_ls", "gopls", "intelephense" })
 -- Telescope replacement
 require("mini.pick").setup()
 vim.ui.select = function(items, opts, on_choice)
-  require"mini.pick".ui_select(items, opts, on_choice)
+	require "mini.pick".ui_select(items, opts, on_choice)
 end
 vim.keymap.set('n', '<leader>f', "<cmd>Pick files<CR>")
 vim.keymap.set('n', '<leader>g', "<cmd>Pick grep_live<CR>")
@@ -66,49 +66,58 @@ vim.keymap.set('n', '<leader>h', "<cmd>Pick help<CR>")
 
 -- Setup LSP keymaps only when a language server attaches
 vim.api.nvim_create_autocmd('LspAttach', {
-  desc = 'LSP actions',
-  callback = function(ev)
-    local buf = ev.buf
-    local opts = { buffer = buf, silent = true, noremap = true }
+	desc = 'LSP actions',
+	callback = function(ev)
+		local buf = ev.buf
+		local opts = { buffer = buf, silent = true, noremap = true }
 
-    -- Helper function for easier keymap definition
-    local map = function(mode, lhs, rhs, desc)
-      vim.keymap.set(mode, lhs, rhs)
-    end
+		-- Helper function for easier keymap definition
+		local map = function(mode, lhs, rhs, desc)
+			vim.keymap.set(mode, lhs, rhs)
+		end
 
-    -- === NAVIGATION ===
-    map('n', 'gd', vim.lsp.buf.definition, 'Go to definition')
-    map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration')
-    map('n', 'gt', vim.lsp.buf.type_definition, 'Go to type definition')
-    map('n', 'gi', vim.lsp.buf.implementation, 'Go to implementation')
-    map('n', 'gr', vim.lsp.buf.references, 'List references')
+		-- === NAVIGATION ===
+		map('n', 'gd', vim.lsp.buf.definition, 'Go to definition')
+		map('n', 'gD', vim.lsp.buf.declaration, 'Go to declaration')
+		map('n', 'gt', vim.lsp.buf.type_definition, 'Go to type definition')
+		map('n', 'gi', vim.lsp.buf.implementation, 'Go to implementation')
+		map('n', 'gr', vim.lsp.buf.references, 'List references')
 
-    -- === CODE ACTIONS ===
-    map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, 'Code action')
-    map('n', '<leader>rn', vim.lsp.buf.rename, 'Rename symbol')
-    map('n', '<leader>lf', function() vim.lsp.buf.format({ async = true }) end, 'Format buffer')
+		-- === CODE ACTIONS ===
+		map({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, 'Code action')
+		map('n', '<leader>rn', vim.lsp.buf.rename, 'Rename symbol')
+		map('n', '<leader>lf', function()
+			local ft = vim.bo.filetype
 
-    -- === DIAGNOSTICS ===
-    map('n', 'gl', vim.diagnostic.open_float, 'Show diagnostics')
-    map('n', '[d', vim.diagnostic.goto_prev, 'Prev diagnostic')
-    map('n', ']d', vim.diagnostic.goto_next, 'Next diagnostic')
-    map('n', '<leader>q', vim.diagnostic.setloclist, 'Diagnostics list')
+			-- Run :Prettier for JavaScript or TypeScript files
+			if ft == 'javascript' or ft == 'typescript' or ft == 'javascriptreact' or ft == 'typescriptreact' then
+				vim.cmd('Prettier')
+			else
+				vim.lsp.buf.format { async = true }
+			end
+		end, 'Format buffer')
 
-    -- === SYMBOLS ===
-    map('n', '<leader>ds', vim.lsp.buf.document_symbol, 'Document symbols')
-    map('n', '<leader>ws', vim.lsp.buf.workspace_symbol, 'Workspace symbols')
+		-- === DIAGNOSTICS ===
+		map('n', 'gl', vim.diagnostic.open_float, 'Show diagnostics')
+		map('n', '[d', vim.diagnostic.goto_prev, 'Prev diagnostic')
+		map('n', ']d', vim.diagnostic.goto_next, 'Next diagnostic')
+		map('n', '<leader>q', vim.diagnostic.setloclist, 'Diagnostics list')
 
-    -- === MISC ===
-    map('n', '<leader>lh', vim.lsp.buf.signature_help, 'Signature help')
+		-- === SYMBOLS ===
+		map('n', '<leader>ds', vim.lsp.buf.document_symbol, 'Document symbols')
+		map('n', '<leader>ws', vim.lsp.buf.workspace_symbol, 'Workspace symbols')
 
-    -- === COMPLETION (optional) ===
-    vim.opt_local.omnifunc = 'v:lua.vim.lsp.omnifunc'
-  end,
+		-- === MISC ===
+		map('n', '<leader>lh', vim.lsp.buf.signature_help, 'Signature help')
+
+		-- === COMPLETION (optional) ===
+		vim.opt_local.omnifunc = 'v:lua.vim.lsp.omnifunc'
+	end,
 })
 
 -- Autocomplete
 require("blink.cmp").setup({
-  snippets = { preset = "luasnip" },
+	snippets = { preset = "luasnip" },
 })
 require "luasnip.loaders.from_vscode".lazy_load()
 
