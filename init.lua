@@ -73,8 +73,10 @@ vim.api.nvim_create_autocmd('LspAttach', {
 
 		-- Helper function for easier keymap definition
 		local map = function(mode, lhs, rhs, desc)
-			vim.keymap.set(mode, lhs, rhs)
+			vim.keymap.set(mode, lhs, rhs, opts)
 		end
+
+		map("n", "K", vim.lsp.buf.hover, "LSP hover symbol info")
 
 		-- === NAVIGATION ===
 		map('n', 'gd', vim.lsp.buf.definition, 'Go to definition')
