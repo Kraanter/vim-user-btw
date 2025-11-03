@@ -6,6 +6,7 @@
       "version": "'v1.7.0'"
     },
     "friendly-snippets": [],
+    "gitsigns.nvim": [],
     "harpoon": {
       "version": "'harpoon2'"
     },
@@ -16,6 +17,10 @@
     "mini.pick": [],
     "neovim": [],
     "nvim-lspconfig": [],
+    "nvim-treesitter": {
+      "rev": "42fc28ba",
+      "src": "https://github.com/nvim-treesitter/nvim-treesitter"
+    },
     "oil.nvim": [],
     "plenary.nvim": [],
     "transparent.nvim": []

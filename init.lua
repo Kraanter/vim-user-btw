@@ -141,14 +141,15 @@ vim.pack.add({
     { src = "https://github.com/stevearc/oil.nvim" },
     { src = "https://github.com/echasnovski/mini.pick" },
     { src = "https://github.com/echasnovski/mini.extra" },
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
     { src = "https://github.com/neovim/nvim-lspconfig" },
     { src = "https://github.com/L3MON4D3/LuaSnip" },
-    { src = "https://github.com/Saghen/blink.cmp",            version = "v1.7.0" },
+    { src = "https://github.com/Saghen/blink.cmp",               version = "v1.7.0" },
     { src = "https://github.com/rafamadriz/friendly-snippets" },
     { src = "https://github.com/lewis6991/gitsigns.nvim" },
     { src = "https://github.com/rmagatti/auto-session" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
-    { src = "https://github.com/theprimeagen/harpoon",        version = "harpoon2" },
+    { src = "https://github.com/theprimeagen/harpoon",           version = "harpoon2" },
 })
 
 -- ============================================================================
@@ -219,6 +220,14 @@ require("luasnip.loaders.from_vscode").lazy_load()
 -- ============================================================================
 -- Tools
 -- ============================================================================
+require("nvim-treesitter.configs").setup({
+    auto_install = true,
+    highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+    },
+    indent = { enable = true },
+})
 require("mini.pick").setup({
     source = {
         grep_live = {
