@@ -145,6 +145,7 @@ vim.pack.add({
     { src = "https://github.com/L3MON4D3/LuaSnip" },
     { src = "https://github.com/Saghen/blink.cmp",            version = "v1.7.0" },
     { src = "https://github.com/rafamadriz/friendly-snippets" },
+    { src = "https://github.com/lewis6991/gitsigns.nvim" },
     { src = "https://github.com/rmagatti/auto-session" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
     { src = "https://github.com/theprimeagen/harpoon",        version = "harpoon2" },
@@ -228,19 +229,27 @@ require("mini.pick").setup({
 require("mini.extra").setup()
 require("oil").setup({})
 require("auto-session").setup({})
+require("gitsigns").setup({
+    numhl = true,
+    current_line_blame = true,
+    current_line_blame_opts = {
+        virt_text_pos = 'right_align',
+        delay = 0,
+    },
+})
 
 -- ============================================================================
 -- Theme
 -- ============================================================================
 vim.cmd.colorscheme("rose-pine-moon")
 require("transparent").setup({
-  -- keep your existing config; add these to exclusions
-  exclude_groups = {
-    "NormalFloat", "FloatBorder", "Pmenu", "PmenuSel",
-    -- mini.pick groups (catch-all; harmless if some don’t exist)
-    "MiniPickNormal", "MiniPickBorder", "MiniPickPrompt",
-    "MiniPickMatchCurrent", "MiniPickMatch", "MiniPickHeader",
-  },
+    -- keep your existing config; add these to exclusions
+    exclude_groups = {
+        "NormalFloat", "FloatBorder", "Pmenu", "PmenuSel",
+        -- mini.pick groups (catch-all; harmless if some don’t exist)
+        "MiniPickNormal", "MiniPickBorder", "MiniPickPrompt",
+        "MiniPickMatchCurrent", "MiniPickMatch", "MiniPickHeader",
+    },
 })
 
 -- Get palette for current Rose Pine variant
