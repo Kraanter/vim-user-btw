@@ -105,7 +105,7 @@ map('n', '<leader>sd', "<cmd>Pick lsp scope='document_symbol'<CR>", 'LSP documen
 map('n', '<leader>ss', "<cmd>Pick lsp scope='workspace_symbol'<CR>", 'LSP workspace symbols')
 
 -- Oil
-map("n", "<leader>e", "<cmd>Oil<CR>", "File explorer (Oil)")
+map("n", "<leader>e", "<cmd>Oil --preview<CR>", "File explorer (Oil)")
 
 -- Transparency
 map("n", "<leader>t", "<cmd>TransparentToggle<CR>", "Toggle transparency")
@@ -157,15 +157,28 @@ vim.pack.add({
 -- LSP
 -- ============================================================================
 -- Prefer the new helper when available; otherwise basic lspconfig fallback
-if vim.lsp and vim.lsp.enable then
-    vim.lsp.enable({ "lua_ls", "ts_ls", "gopls", "intelephense", "rust_analyzer" })
-else
-    local lsp = require("lspconfig")
-    local servers = { lua_ls = {}, tsserver = {}, gopls = {}, intelephense = {} }
-    for name, cfg in pairs(servers) do
-        if lsp[name] then lsp[name].setup(cfg) end
-    end
-end
+
+local vue_language_server_path = '~/.bun/bin/vue-language-server'
+local tsserver_filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' }
+local vue_plugin = {
+    name = '@vue/typescript-plugin',
+    location = vue_language_server_path,
+    languages = { 'vue' },
+    configNamespace = 'typescript',
+}
+local ts_ls_config = {
+    init_options = {
+        plugins = {
+            vue_plugin,
+        },
+    },
+    filetypes = tsserver_filetypes,
+}
+
+vim.lsp.enable({ "lua_ls", "gopls", "intelephense", "rust_analyzer", "jsonls" })
+vim.lsp.config('vue_ls', {})
+vim.lsp.config('ts_ls', ts_ls_config)
+vim.lsp.enable({ 'ts_ls', 'vue_ls' })
 
 -- Buffer-local LSP mappings on attach
 api.nvim_create_autocmd("LspAttach", {
@@ -237,7 +250,9 @@ require("mini.pick").setup({
     },
 })
 require("mini.extra").setup()
-require("oil").setup({})
+require("oil").setup({
+    watch_for_changes = true,
+})
 require("auto-session").setup({})
 require("gitsigns").setup({
     numhl = true,
