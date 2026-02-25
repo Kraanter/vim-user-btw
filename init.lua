@@ -144,13 +144,21 @@ vim.pack.add({
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
     { src = "https://github.com/neovim/nvim-lspconfig" },
     { src = "https://github.com/prettier/vim-prettier" },
+
+    { src = "https://github.com/hrsh7th/nvim-cmp" },
+    { src = "https://github.com/hrsh7th/cmp-nvim-lsp" },
+    { src = "https://github.com/hrsh7th/cmp-buffer" },
+    { src = "https://github.com/hrsh7th/cmp-path" },
+    { src = "https://github.com/saadparwaiz1/cmp_luasnip" },
+
     { src = "https://github.com/L3MON4D3/LuaSnip" },
-    { src = "https://github.com/Saghen/blink.cmp",               version = "v1.7.0" },
     { src = "https://github.com/rafamadriz/friendly-snippets" },
     { src = "https://github.com/lewis6991/gitsigns.nvim" },
     { src = "https://github.com/rmagatti/auto-session" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
     { src = "https://github.com/theprimeagen/harpoon",           version = "harpoon2" },
+    { src = "https://github.com/ThePrimeagen/99" },
+    { src = "https://github.com/jackplus-xyz/monaspace.nvim" },
 })
 
 -- ============================================================================
@@ -265,12 +273,77 @@ api.nvim_create_autocmd("LspAttach", {
 })
 
 -- ============================================================================
--- Completion & snippets
+-- Completion & snippets (nvim-cmp + LuaSnip)
 -- ============================================================================
-require("blink.cmp").setup({
-    snippets = { preset = "luasnip" },
-})
+local cmp = require("cmp")
+local luasnip = require("luasnip")
+
 require("luasnip.loaders.from_vscode").lazy_load()
+
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            luasnip.lsp_expand(args.body)
+        end,
+    },
+    mapping = cmp.mapping.preset.insert({
+        ["<C-n>"] = cmp.mapping.select_next_item(),
+        ["<C-p>"] = cmp.mapping.select_prev_item(),
+        ["<C-y>"] = cmp.mapping.confirm({ select = true }),
+        ["<C-Space>"] = cmp.mapping.complete(),
+        ["<CR>"] = cmp.mapping.confirm({ select = true }),
+    }),
+    sources = cmp.config.sources({
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+        { name = "path" },
+        { name = "buffer" },
+    }),
+})
+
+-- ============================================================================
+-- 99 setup (OpenCode + cmp completion)
+-- ============================================================================
+local _99 = require("99")
+
+local cwd = vim.uv.cwd()
+local basename = vim.fs.basename(cwd)
+
+_99.setup({
+    provider = _99.OpenCodeProvider, -- default, but explicit
+
+    logger = {
+        level = _99.DEBUG,
+        path = "/tmp/" .. basename .. ".99.debug",
+        print_on_error = true,
+    },
+
+    --- Completions: #rules and @files in the prompt buffer (requires nvim-cmp)
+    completion = {
+        custom_rules = {
+            "scratch/custom_rules/",
+        },
+        files = {
+            -- enabled = true,
+            -- max_file_size = 102400,
+            -- max_files = 5000,
+            -- exclude = { ".env", ".env.*", "node_modules", ".git" },
+        },
+        source = "cmp",
+    },
+
+    md_files = {
+        "AGENT.md",
+    },
+})
+
+vim.keymap.set("v", "<leader>9v", function()
+    _99.visual()
+end, { noremap = true, silent = true, desc = "99: Visual request" })
+
+vim.keymap.set("v", "<leader>9s", function()
+    _99.stop_all_requests()
+end, { noremap = true, silent = true, desc = "99: Stop all requests" })
 
 -- ============================================================================
 -- Tools
@@ -319,6 +392,10 @@ require("gitsigns").setup({
 -- Theme
 -- ============================================================================
 vim.cmd.colorscheme("rose-pine-moon")
+
+require("monaspace").setup({
+    use_default = true,
+})
 
 require("transparent").setup({
     exclude_groups = {
