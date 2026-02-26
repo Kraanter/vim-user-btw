@@ -142,6 +142,7 @@ vim.pack.add({
     { src = "https://github.com/echasnovski/mini.pick" },
     { src = "https://github.com/echasnovski/mini.extra" },
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" },
+    { src = "https://github.com/nvim-treesitter/nvim-treesitter-context" },
     { src = "https://github.com/neovim/nvim-lspconfig" },
     { src = "https://github.com/prettier/vim-prettier" },
 
@@ -154,9 +155,8 @@ vim.pack.add({
     { src = "https://github.com/L3MON4D3/LuaSnip" },
     { src = "https://github.com/rafamadriz/friendly-snippets" },
     { src = "https://github.com/lewis6991/gitsigns.nvim" },
-    { src = "https://github.com/rmagatti/auto-session" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
-    { src = "https://github.com/theprimeagen/harpoon",           version = "harpoon2" },
+    { src = "https://github.com/theprimeagen/harpoon",                   version = "harpoon2" },
     { src = "https://github.com/ThePrimeagen/99" },
     { src = "https://github.com/jackplus-xyz/monaspace.nvim" },
 })
@@ -357,6 +357,22 @@ require("nvim-treesitter.configs").setup({
     indent = { enable = true },
 })
 
+require 'treesitter-context'.setup({
+    enable = true,            -- Enable this plugin (Can be enabled/disabled later via commands)
+    multiwindow = false,      -- Enable multiwindow support.
+    max_lines = 0,            -- How many lines the window should span. Values <= 0 mean no limit.
+    min_window_height = 0,    -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+    line_numbers = true,
+    multiline_threshold = 20, -- Maximum number of lines to show for a single context
+    trim_scope = 'outer',     -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+    mode = 'cursor',          -- Line used to calculate context. Choices: 'cursor', 'topline'
+    -- Separator between context and content. Should be a single character string, like '-'.
+    -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+    separator = nil,
+    zindex = 20,     -- The Z-index of the context window
+    on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+})
+
 require("mini.pick").setup({
     source = {
         grep_live = {
@@ -377,8 +393,6 @@ require("oil").setup({
     watch_for_changes = true,
 })
 
-require("auto-session").setup({})
-
 require("gitsigns").setup({
     numhl = true,
     current_line_blame = true,
@@ -394,7 +408,126 @@ require("gitsigns").setup({
 vim.cmd.colorscheme("rose-pine-moon")
 
 require("monaspace").setup({
-    use_default = true,
+    use_default = false,
+
+    style_map = {
+        italic = {
+            Comment = true,
+            Todo = true,
+            SpecialComment = true,
+            ["@comment"] = true,
+            ["@comment.documentation"] = true,
+            ["@comment.error"] = true,
+            ["@comment.warning"] = true,
+            ["@comment.todo"] = true,
+            ["@comment.hint"] = true,
+            ["@comment.info"] = true,
+            ["@comment.note"] = true,
+            ["@string.documentation"] = true,
+            LspCodeLens = true,
+            LspInlayHint = true,
+            ["@lsp.type.comment"] = true,
+            ["@lsp.type.comment.c"] = true,
+            ["@lsp.type.comment.cpp"] = true,
+            ["@markup.heading"] = true,
+            ["@markup.heading.1.markdown"] = true,
+            ["@markup.heading.2.markdown"] = true,
+            ["@markup.heading.3.markdown"] = true,
+            ["@markup.heading.4.markdown"] = true,
+            ["@markup.heading.5.markdown"] = true,
+            ["@markup.heading.6.markdown"] = true,
+            ["@markup.heading.1.marker.markdown"] = true,
+            ["@markup.heading.2.marker.markdown"] = true,
+            ["@markup.heading.3.marker.markdown"] = true,
+            ["@markup.heading.4.marker.markdown"] = true,
+            ["@markup.heading.5.marker.markdown"] = true,
+            ["@markup.heading.6.marker.markdown"] = true,
+            markdownH1 = true,
+            markdownH2 = true,
+            markdownH3 = true,
+            markdownH4 = true,
+            markdownH5 = true,
+            markdownH6 = true,
+            markdownH1Delimiter = true,
+            markdownH2Delimiter = true,
+            markdownH3Delimiter = true,
+            markdownH4Delimiter = true,
+            markdownH5Delimiter = true,
+            markdownH6Delimiter = true,
+        },
+        bold = {
+            markdownUrl = true,
+            htmlLink = true,
+            ["@markup.italic"] = true,
+            ["@markup.quote"] = true,
+            ["@string.special.url"] = true,
+            ["@string.special.path"] = true,
+            ["@markup.link"] = true,
+            ["@markup.link.url"] = true,
+            ["@markup.link.markdown_inline"] = true,
+            ["@markup.link.label.markdown_inline"] = true,
+            mkdInlineURL = true,
+            mkdLink = true,
+            mkdURL = true,
+            mkdLinkDef = true,
+            markdownLinkText = true,
+            ["@markup.math"] = true,
+            ["@markup.environment"] = true,
+            ["@markup.environment.name"] = true,
+        },
+        bold_italic = {
+            DiagnosticError = true,
+            DiagnosticHint = true,
+            DiagnosticInfo = true,
+            DiagnosticOk = true,
+            DiagnosticWarn = true,
+            DiagnosticDefaultError = true,
+            DiagnosticDefaultHint = true,
+            DiagnosticDefaultInfo = true,
+            DiagnosticDefaultOk = true,
+            DiagnosticDefaultWarn = true,
+            DiagnosticFloatingError = true,
+            DiagnosticFloatingHint = true,
+            DiagnosticFloatingInfo = true,
+            DiagnosticFloatingOk = true,
+            DiagnosticFloatingWarn = true,
+            DiagnosticSignError = true,
+            DiagnosticSignHint = true,
+            DiagnosticSignInfo = true,
+            DiagnosticSignOk = true,
+            DiagnosticSignWarn = true,
+            DiagnosticUnderlineError = true,
+            DiagnosticUnderlineHint = true,
+            DiagnosticUnderlineInfo = true,
+            DiagnosticUnderlineOk = true,
+            DiagnosticUnderlineWarn = true,
+            DiagnosticVirtualTextError = true,
+            DiagnosticVirtualTextHint = true,
+            DiagnosticVirtualTextInfo = true,
+            DiagnosticVirtualTextOk = true,
+            DiagnosticVirtualTextWarn = true,
+            ErrorMsg = true,
+            WarningMsg = true,
+            ModeMsg = true,
+            MoreMsg = true,
+            Question = true,
+            RedrawDebugNormal = true,
+            RedrawDebugClear = true,
+            RedrawDebugComposed = true,
+            RedrawDebugRecompose = true,
+            healthError = true,
+            healthSuccess = true,
+            healthWarning = true,
+            NvimInternalError = true,
+            FloatTitle = true,
+            WinBar = true,
+            WinBarNC = true,
+            StatusLine = true,
+            StatusLineNC = true,
+            StatusLineTerm = true,
+            StatusLineTermNC = true,
+        },
+    }
 })
 
 require("transparent").setup({
