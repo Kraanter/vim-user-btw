@@ -153,12 +153,14 @@ vim.pack.add({
     { src = "https://github.com/saadparwaiz1/cmp_luasnip" },
 
     { src = "https://github.com/L3MON4D3/LuaSnip" },
+    { src = "https://github.com/LunarVim/bigfile.nvim" },
     { src = "https://github.com/rafamadriz/friendly-snippets" },
     { src = "https://github.com/lewis6991/gitsigns.nvim" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
     { src = "https://github.com/theprimeagen/harpoon",                   version = "harpoon2" },
     { src = "https://github.com/ThePrimeagen/99" },
     { src = "https://github.com/jackplus-xyz/monaspace.nvim" },
+    { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
 })
 
 -- ============================================================================
@@ -306,35 +308,8 @@ cmp.setup({
 -- ============================================================================
 local _99 = require("99")
 
-local cwd = vim.uv.cwd()
-local basename = vim.fs.basename(cwd)
-
 _99.setup({
     provider = _99.OpenCodeProvider, -- default, but explicit
-
-    logger = {
-        level = _99.DEBUG,
-        path = "/tmp/" .. basename .. ".99.debug",
-        print_on_error = true,
-    },
-
-    --- Completions: #rules and @files in the prompt buffer (requires nvim-cmp)
-    completion = {
-        custom_rules = {
-            "scratch/custom_rules/",
-        },
-        files = {
-            -- enabled = true,
-            -- max_file_size = 102400,
-            -- max_files = 5000,
-            -- exclude = { ".env", ".env.*", "node_modules", ".git" },
-        },
-        source = "cmp",
-    },
-
-    md_files = {
-        "AGENT.md",
-    },
 })
 
 vim.keymap.set("v", "<leader>9v", function()
@@ -528,6 +503,10 @@ require("monaspace").setup({
             StatusLineTermNC = true,
         },
     }
+})
+
+require('render-markdown').setup({
+    completions = { lsp = { enabled = true } },
 })
 
 require("transparent").setup({
