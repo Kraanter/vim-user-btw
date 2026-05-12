@@ -19,7 +19,6 @@ vim.pack.add({
     { src = "https://github.com/lewis6991/gitsigns.nvim" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
     { src = "https://github.com/theprimeagen/harpoon", version = "harpoon2" },
-    { src = "https://github.com/ThePrimeagen/99" },
     { src = "https://github.com/nickjvandyke/opencode.nvim" },
     { src = "https://github.com/jackplus-xyz/monaspace.nvim" },
     { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },

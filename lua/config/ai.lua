@@ -33,17 +33,3 @@ end, { desc = "Scroll opencode down" })
 
 vim.keymap.set("n", "+", "<C-a>", { desc = "Increment under cursor", noremap = true })
 vim.keymap.set("n", "-", "<C-x>", { desc = "Decrement under cursor", noremap = true })
-
-local _99 = require("99")
-
-_99.setup({
-    provider = _99.OpenCodeProvider,
-})
-
-vim.keymap.set("v", "<leader>9v", function()
-    _99.visual()
-end, { noremap = true, silent = true, desc = "99: Visual request" })
-
-vim.keymap.set("v", "<leader>9s", function()
-    _99.stop_all_requests()
-end, { noremap = true, silent = true, desc = "99: Stop all requests" })
