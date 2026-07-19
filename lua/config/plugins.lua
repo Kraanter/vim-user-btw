@@ -22,4 +22,5 @@ vim.pack.add({
     { src = "https://github.com/nickjvandyke/opencode.nvim" },
     { src = "https://github.com/jackplus-xyz/monaspace.nvim" },
     { src = "https://github.com/MeanderingProgrammer/render-markdown.nvim" },
+    { src = "https://github.com/emrearmagan/atlas.nvim" },
 })

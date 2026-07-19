@@ -88,6 +88,11 @@ require("render-markdown").setup({
     completions = { lsp = { enabled = true } },
 })
 
+require("atlas").setup({
+    pulls = { providers = { github = {} } },
+    issues = { providers = { github = {} } },
+})
+
 require("transparent").setup({
     exclude_groups = {
         "NormalFloat",

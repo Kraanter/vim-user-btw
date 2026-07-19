@@ -13,6 +13,12 @@ map("n", "<leader>ss", "<cmd>Pick lsp scope='workspace_symbol'<CR>", "LSP worksp
 map("n", "<leader>e", "<cmd>Oil --preview<CR>", "File explorer (Oil)")
 map("n", "<leader>t", "<cmd>TransparentToggle<CR>", "Toggle transparency")
 
+map("n", "<leader>p", "<cmd>AtlasPulls github<CR>", "Atlas GitHub PRs")
+map("n", "<leader>i", "<cmd>AtlasIssues github<CR>", "Atlas GitHub issues")
+map("n", "<leader>S", "<cmd>AtlasSearch github<CR>", "Atlas GitHub search")
+map("n", "<leader>P", "<cmd>AtlasCreatePR<CR>", "Atlas create PR")
+map("n", "<leader>I", "<cmd>AtlasCreateIssue<CR>", "Atlas create issue")
+
 map("n", "<leader>a", function()
     require("harpoon"):list():add()
 end, "Harpoon add file")
