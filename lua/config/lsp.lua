@@ -58,9 +58,21 @@ api.nvim_create_autocmd("LspAttach", {
             end
         end, "Format buffer")
 
+        bmap("n", "<leader>d", function()
+            vim.diagnostic.setqflist({
+                open = true,
+                title = "Workspace diagnostics",
+            })
+        end, "Workspace diagnostics")
+        bmap("n", "[d", function()
+            vim.diagnostic.jump({ count = -1, float = true })
+        end, "Prev diagnostic")
+
+        bmap("n", "]d", function()
+            vim.diagnostic.jump({ count = 1, float = true })
+        end, "Next diagnostic")
+
         bmap("n", "gl", vim.diagnostic.open_float, "Line diagnostics")
-        bmap("n", "[d", vim.diagnostic.goto_prev, "Prev diagnostic")
-        bmap("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
         bmap("n", "<leader>q", vim.diagnostic.setloclist, "Populate loclist")
 
         bmap("n", "<leader>ds", vim.lsp.buf.document_symbol, "Document symbols")
