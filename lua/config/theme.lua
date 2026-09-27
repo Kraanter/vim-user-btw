@@ -1,6 +1,6 @@
 local api = vim.api
 
-vim.cmd.colorscheme("rose-pine-moon")
+vim.cmd.colorscheme("rose-pine-dawn")
 
 require("monaspace").setup({
     use_default = false,
